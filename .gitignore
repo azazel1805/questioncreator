@@ -1,0 +1,36 @@
+# --- Hassas Bilgiler ---
+# Asla Git'e gönderilmemeli!
+.env
+
+# --- Sanal Ortam Klasörleri (Yaygın İsimler) ---
+# Python bağımlılıklarını içerir, her makinede farklıdır.
+venv/
+.venv/
+env/
+*/venv/
+*/.venv/
+*/env/
+
+# --- Python Önbellek/Derlenmiş Dosyalar ---
+# Otomatik olarak oluşturulur, kaynak kod değildir.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- İşletim Sistemi Özel Dosyaları ---
+# Projeyle ilgisi olmayan sistem dosyaları (macOS, Windows).
+.DS_Store
+Thumbs.db
+
+# --- IDE/Editör Ayar Klasörleri (İsteğe Bağlı ama Önerilir) ---
+# Kişisel geliştirme ortamı ayarları.
+.vscode/
+.idea/
+
+# --- Log Dosyaları (Varsa) ---
+*.log
+
+# --- Geçici Dosyalar ---
+*~
+*.swp

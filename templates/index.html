@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Soru Üretici</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        select, input[type="number"], button {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+            box-sizing: border-box;
+            background-color: #fff;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #soru-alani, #cevap-alani {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            background-color: #fff;
+            white-space: pre-wrap;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+        #cevap-alani {
+            display: none; /* Varsayılan olarak gizli */
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        #toggle-cevap-btn {
+            background-color: #2ecc71;
+            margin-top: 10px;
+        }
+        #toggle-cevap-btn:hover {
+            background-color: #27ae60;
+        }
+        #ceviri-yonu-alani {
+            display: none; /* Varsayılan olarak gizli */
+        }
+}
+
+.footer-credit {
+    margin-top: 30px; /* Space above the credit line */
+    font-size: 0.85em; /* Smaller font size */
+    color: #888;      /* Grey color */
+    text-align: center; /* Ensure it's centered */
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>İngilizce Soru Üretici</h1>
+
+        <label for="sinav-tipi">Sınav Tipi:</label>
+        <select id="sinav-tipi">
+            <option value="YDS">YDS</option>
+            <option value="YDT">YDT</option>
+            <option value="YÖKDİL (Fen)">YÖKDİL (Fen)</option>
+            <option value="YÖKDİL (Sosyal)">YÖKDİL (Sosyal)</option>
+            <option value="YÖKDİL (Sağlık)">YÖKDİL (Sağlık)</option>
+        </select>
+
+        <label for="zorluk-seviyesi">Zorluk Seviyesi:</label>
+        <select id="zorluk-seviyesi">
+            <option value="Kolay">Kolay</option>
+            <option value="Orta">Orta</option>
+            <option value="Zor">Zor</option>
+        </select>
+
+        <label for="soru-tipi">Soru Tipi:</label>
+        <select id="soru-tipi">
+            <option value="Kelime Sorusu">Kelime Sorusu</option>
+            <option value="Dil Bilgisi Sorusu">Dil Bilgisi Sorusu</option>
+            <option value="Cloze Test Sorusu">Cloze Test Sorusu</option>
+            <option value="Cümle Tamamlama Sorusu">Cümle Tamamlama Sorusu</option>
+            <option value="Çeviri Sorusu">Çeviri Sorusu</option>
+            <option value="Paragraf Sorusu">Paragraf Sorusu</option>
+            <option value="Diyalog Tamamlama Sorusu">Diyalog Tamamlama Sorusu</option>
+            <option value="Restatement (Yeniden Yazma) Sorusu">Restatement (Yeniden Yazma) Sorusu</option>
+            <option value="Paragraf Tamamlama Sorusu">Paragraf Tamamlama Sorusu</option>
+            <option value="Akışı Bozan Cümle Sorusu">Akışı Bozan Cümle Sorusu</option>
+        </select>
+
+        <div id="ceviri-yonu-alani">
+            <label for="ceviri-yonu">Çeviri Yönü:</label>
+            <select id="ceviri-yonu">
+                <option value="tr_to_en">Türkçeden İngilizceye</option>
+                <option value="en_to_tr">İngilizceden Türkçeye</option>
+            </select>
+        </div>
+
+        <label for="soru-sayisi">Soru Sayısı:</label>
+        <input type="number" id="soru-sayisi" min="1" max="20" value="1" placeholder="Soru sayısını girin">
+
+        <button id="soru-uret-btn">Soru Üret</button>
+
+        <h2>Üretilen Sorular:</h2>
+        <div id="soru-alani"></div>
+
+        <button id="toggle-cevap-btn">Cevapları Göster/Gizle</button>
+        <h2>Cevaplar:</h2>
+        <div id="cevap-alani"></div>
+<p class="footer-credit">Created by HOT®</p>
+    </div>
+
+    <script>
+        // Çeviri yönü alanını sadece Çeviri Sorusu seçildiğinde göster
+        document.getElementById('soru-tipi').addEventListener('change', function() {
+            const ceviriYonuAlani = document.getElementById('ceviri-yonu-alani');
+            if (this.value === 'Çeviri Sorusu') {
+                ceviriYonuAlani.style.display = 'block';
+            } else {
+                ceviriYonuAlani.style.display = 'none';
+            }
+        });
+
+        document.getElementById('soru-uret-btn').addEventListener('click', function() {
+            const sinavTipi = document.getElementById('sinav-tipi').value;
+            const zorlukSeviyesi = document.getElementById('zorluk-seviyesi').value;
+            const soruTipi = document.getElementById('soru-tipi').value;
+            const soruSayisi = document.getElementById('soru-sayisi').value;
+            const ceviriYonu = document.getElementById('ceviri-yonu').value;
+
+            fetch('http://localhost:5000/soru_uret', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sinav_tipi: sinavTipi,
+                    zorluk_seviyesi: zorlukSeviyesi,
+                    soru_tipi: soruTipi,
+                    soru_sayisi: soruSayisi,
+                    ceviri_yonu: ceviriYonu  // Çeviri yönünü gönder
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.questions) {
+                    document.getElementById('soru-alani').textContent = data.questions;
+                    document.getElementById('cevap-alani').textContent = data.answers;
+                    document.getElementById('cevap-alani').style.display = 'none'; // Varsayılan gizli
+                } else if (data.error) {
+                    document.getElementById('soru-alani').textContent = 'Hata: ' + data.error;
+                    document.getElementById('cevap-alani').textContent = '';
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                document.getElementById('soru-alani').textContent = 'Bir hata oluştu.';
+                document.getElementById('cevap-alani').textContent = '';
+            });
+        });
+
+        document.getElementById('toggle-cevap-btn').addEventListener('click', function() {
+            const cevapAlani = document.getElementById('cevap-alani');
+            if (cevapAlani.style.display === 'none' || cevapAlani.style.display === '') {
+                cevapAlani.style.display = 'block';
+                this.textContent = 'Cevapları Gizle';
+            } else {
+                cevapAlani.style.display = 'none';
+                this.textContent = 'Cevapları Göster';
+            }
+        });
+    </script>
+</body>
+</html>
