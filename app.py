@@ -10,21 +10,6 @@ api_key = os.getenv("GOOGLE_API_KEY")
 
 app = Flask(__name__)
 CORS(app)
-@app.before_request
-def restrict_origin():
-    allowed_origins = [
-        "https://sites.google.com",
-        "https://sites.google.com/view/basicsinenglish",  # your actual site path
-        "https://www.basicsinenglish.app"  # if you use a custom domain
-    ]
-    origin = request.headers.get('Origin')
-    referer = request.headers.get('Referer')
-
-    if origin and not any(origin.startswith(o) for o in allowed_origins):
-        abort(403)
-    if referer and not any(referer.startswith(r) for r in allowed_origins):
-        abort(403)
-
 
 def soru_uret(sinav_tipi, soru_tipi, zorluk_seviyesi, soru_sayisi, ceviri_yonu, api_key):
     genai.configure(api_key=api_key)
