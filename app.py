@@ -20,6 +20,7 @@ app = Flask(__name__)
 # IMPORTANT: Use the exact origins your frontend runs on.
 ALLOWED_ORIGINS = [
     "https://www.basicsinenglish.app",
+	"https://questioncreator.onrender.com"
     # Add local development URL if needed, e.g.: "http://localhost:3000"
 ]
 
