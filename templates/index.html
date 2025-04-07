@@ -1,160 +1,75 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İngilizce Soru Üretici</title>
+    <title>Soru Üretici</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #eef2f7; /* Slightly softer background */
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f9;
             color: #333;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto; /* Added top margin */
-            padding: 30px;     /* Increased padding */
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
         }
         h1 {
             color: #2c3e50;
             text-align: center;
-            margin-bottom: 30px; /* More space below title */
         }
-        h2 {
-             color: #34495e;
-             border-bottom: 2px solid #ecf0f1; /* Subtle separator */
-             padding-bottom: 5px;
-             margin-top: 30px;
-        }
-        form {
-            display: grid; /* Use grid for better alignment */
-            grid-template-columns: auto 1fr; /* Label and control */
-            gap: 15px; /* Space between rows and columns */
-            align-items: center; /* Vertically align items in grid */
-            margin-bottom: 20px;
-        }
-
         label {
-            /* Removed display: block; - handled by grid */
+            display: block;
+            margin-bottom: 5px;
             font-weight: bold;
             color: #34495e;
-            grid-column: 1 / 2; /* Labels in first column */
-            text-align: right; /* Align labels to the right */
-            padding-right: 10px; /* Space between label and control */
         }
         select, input[type="number"], button {
-            /* Removed margin-bottom - handled by grid gap */
+            margin-bottom: 15px;
             padding: 10px;
             border: 1px solid #bdc3c7;
             border-radius: 5px;
-            width: 100%; /* Take full width of grid cell */
+            width: 100%;
+            max-width: 300px;
             box-sizing: border-box;
             background-color: #fff;
-            font-size: 1em; /* Relative font size */
-            grid-column: 2 / 3; /* Controls in second column */
+            font-size: 16px;
         }
-        /* Target only the specific container for ceviri-yonu */
-        #ceviri-yonu-container {
-             grid-column: 1 / 3; /* Span both grid columns */
-             display: none; /* Hide by default */
-             margin-top: 0; /* Reset margin if needed */
-             padding-left: 0; /* Reset padding if needed */
-        }
-        #ceviri-yonu-container label {
-             grid-column: 1 / 2; /* Keep label alignment */
-             text-align: right;
-             padding-right: 10px;
-        }
-         #ceviri-yonu-container select {
-             grid-column: 2 / 3; /* Keep select alignment */
-         }
-
-        /* Style the main button */
-        #soru-uret-btn {
+        button {
             background-color: #3498db;
             color: white;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s;
-            grid-column: 1 / 3; /* Span both columns */
-            margin-top: 10px; /* Add space above button */
-            font-weight: bold;
         }
-        #soru-uret-btn:hover {
+        button:hover {
             background-color: #2980b9;
         }
-        #soru-uret-btn:disabled { /* Style for when button is disabled */
-            background-color: #bdc3c7;
-            cursor: not-allowed;
+        #soru-alani, #cevap-alani {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            background-color: #fff;
+            white-space: pre-wrap;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
         }
-
-         /* Style the toggle button */
+        #cevap-alani {
+            display: none; /* Varsayılan olarak gizli */
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
         #toggle-cevap-btn {
             background-color: #2ecc71;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 20px; /* Space above toggle button */
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            display: none; /* Hide initially until there are results */
+            margin-top: 10px;
         }
         #toggle-cevap-btn:hover {
             background-color: #27ae60;
         }
-
-        /* Output Areas */
-        #soru-alani, #cevap-alani {
-            margin-top: 15px;
-            padding: 15px;
-            border: 1px solid #ecf0f1; /* Lighter border */
-            border-radius: 5px;
-            background-color: #fdfdfd; /* Slightly off-white */
-            white-space: pre-wrap;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Inner shadow */
-            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; /* Monospace font */
-            font-size: 0.95em;
-            min-height: 100px; /* Ensure area is visible even when empty */
-            color: #555;
-        }
-        #cevap-alani {
-            display: none; /* Hidden by default */
-        }
-
-        /* Loading and Error Messages */
-        #loading {
-            display: none; /* Hidden by default */
-            text-align: center;
-            margin: 20px 0;
-            font-weight: bold;
-            color: #3498db;
-        }
-        #error-message {
-            display: none; /* Hidden by default */
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .footer-credit {
-            margin-top: 40px; /* More space */
-            padding-top: 15px;
-            border-top: 1px solid #ecf0f1; /* Separator line */
-            font-size: 0.85em;
-            color: #888;
-            text-align: center;
+        #ceviri-yonu-alani {
+            display: none; /* Varsayılan olarak gizli */
         }
     </style>
 </head>
@@ -162,206 +77,116 @@
     <div class="container">
         <h1>İngilizce Soru Üretici</h1>
 
-        <form id="question-generation-form">
-            <label for="sinav-tipi">Sınav Tipi:</label>
-            <select id="sinav-tipi" name="sinav_tipi" required>
-                <option value="YDS">YDS</option>
-                <option value="YDT">YDT</option>
-                <option value="YÖKDİL (Fen)">YÖKDİL (Fen)</option>
-                <option value="YÖKDİL (Sosyal)">YÖKDİL (Sosyal)</option>
-                <option value="YÖKDİL (Sağlık)">YÖKDİL (Sağlık)</option>
+        <label for="sinav-tipi">Sınav Tipi:</label>
+        <select id="sinav-tipi">
+            <option value="YDS">YDS</option>
+            <option value="YDT">YDT</option>
+            <option value="YÖKDİL (Fen)">YÖKDİL (Fen)</option>
+            <option value="YÖKDİL (Sosyal)">YÖKDİL (Sosyal)</option>
+            <option value="YÖKDİL (Sağlık)">YÖKDİL (Sağlık)</option>
+        </select>
+
+        <label for="zorluk-seviyesi">Zorluk Seviyesi:</label>
+        <select id="zorluk-seviyesi">
+            <option value="Kolay">Kolay</option>
+            <option value="Orta">Orta</option>
+            <option value="Zor">Zor</option>
+        </select>
+
+        <label for="soru-tipi">Soru Tipi:</label>
+        <select id="soru-tipi">
+            <option value="Kelime Sorusu">Kelime Sorusu</option>
+            <option value="Dil Bilgisi Sorusu">Dil Bilgisi Sorusu</option>
+            <option value="Cloze Test Sorusu">Cloze Test Sorusu</option>
+            <option value="Cümle Tamamlama Sorusu">Cümle Tamamlama Sorusu</option>
+            <option value="Çeviri Sorusu">Çeviri Sorusu</option>
+            <option value="Paragraf Sorusu">Paragraf Sorusu</option>
+            <option value="Diyalog Tamamlama Sorusu">Diyalog Tamamlama Sorusu</option>
+            <option value="Restatement (Yeniden Yazma) Sorusu">Restatement (Yeniden Yazma) Sorusu</option>
+            <option value="Paragraf Tamamlama Sorusu">Paragraf Tamamlama Sorusu</option>
+            <option value="Akışı Bozan Cümle Sorusu">Akışı Bozan Cümle Sorusu</option>
+        </select>
+
+        <div id="ceviri-yonu-alani">
+            <label for="ceviri-yonu">Çeviri Yönü:</label>
+            <select id="ceviri-yonu">
+                <option value="tr_to_en">Türkçeden İngilizceye</option>
+                <option value="en_to_tr">İngilizceden Türkçeye</option>
             </select>
-
-            <label for="zorluk-seviyesi">Zorluk Seviyesi:</label>
-            <select id="zorluk-seviyesi" name="zorluk_seviyesi" required>
-                <option value="Beginner">Beginner (A1-A2)</option> <!-- Using English values like backend -->
-                <option value="Intermediate">Intermediate (B1-B2)</option>
-                <option value="Advanced">Advanced (C1-C2)</option>
-            </select>
-
-            <label for="soru-tipi">Soru Tipi:</label>
-            <select id="soru-tipi" name="soru_tipi" required>
-                <option value="Kelime Sorusu">Kelime Sorusu</option>
-                <option value="Dil Bilgisi Sorusu">Dil Bilgisi Sorusu</option>
-                <option value="Cloze Test Sorusu">Cloze Test Sorusu</option>
-                <option value="Cümle Tamamlama Sorusu">Cümle Tamamlama Sorusu</option>
-                <option value="Çeviri Sorusu">Çeviri Sorusu</option>
-                <option value="Paragraf Sorusu">Paragraf Sorusu</option>
-                <option value="Diyalog Tamamlama Sorusu">Diyalog Tamamlama Sorusu</option>
-                <option value="Restatement (Yeniden Yazma) Sorusu">Restatement (Yeniden Yazma) Sorusu</option>
-                <option value="Paragraf Tamamlama Sorusu">Paragraf Tamamlama Sorusu</option>
-                <option value="Akışı Bozan Cümle Sorusu">Akışı Bozan Cümle Sorusu</option>
-            </select>
-
-            <!-- Container for ceviri-yonu -->
-            <div id="ceviri-yonu-container">
-                <label for="ceviri-yonu">Çeviri Yönü:</label>
-                <select id="ceviri-yonu" name="ceviri_yonu">
-                    <option value="tr_to_en">Türkçeden İngilizceye</option>
-                    <option value="en_to_tr">İngilizceden Türkçeye</option>
-                </select>
-            </div>
-
-            <label for="soru-sayisi">Soru Sayısı (1-20):</label>
-            <input type="number" id="soru-sayisi" name="soru_sayisi" min="1" max="20" value="5" required>
-
-            <!-- Submit button -->
-            <button type="submit" id="soru-uret-btn">Soru Üret</button>
-        </form>
-
-        <!-- Feedback Elements -->
-        <div id="loading">Üretiliyor, lütfen bekleyin...</div>
-        <div id="error-message"></div> <!-- For displaying errors -->
-
-        <!-- Results Area -->
-        <div id="results-area" style="display: none;"> <!-- Hide results area initially -->
-             <h2>Üretilen Sorular:</h2>
-             <div id="soru-alani">Sorular burada görünecek...</div>
-
-             <button id="toggle-cevap-btn">Cevapları Göster</button>
-
-             <div id="cevap-alani">Cevaplar burada görünecek...</div>
         </div>
 
+        <label for="soru-sayisi">Soru Sayısı:</label>
+        <input type="number" id="soru-sayisi" min="1" max="20" value="1" placeholder="Soru sayısını girin">
 
-        <p class="footer-credit">Created by HOT®</p>
+        <button id="soru-uret-btn">Soru Üret</button>
+
+        <h2>Üretilen Sorular:</h2>
+        <div id="soru-alani"></div>
+
+        <button id="toggle-cevap-btn">Cevapları Göster/Gizle</button>
+        <h2>Cevaplar:</h2>
+        <div id="cevap-alani"></div>
     </div>
 
     <script>
-        // --- Get Element References ---
-        const form = document.getElementById('question-generation-form');
-        const sinavTipiSelect = document.getElementById('sinav-tipi');
-        const zorlukSeviyesiSelect = document.getElementById('zorluk-seviyesi');
-        const soruTipiSelect = document.getElementById('soru-tipi');
-        const soruSayisiInput = document.getElementById('soru-sayisi');
-        const ceviriYonuSelect = document.getElementById('ceviri-yonu');
-        const ceviriYonuContainer = document.getElementById('ceviri-yonu-container');
-        const soruUretBtn = document.getElementById('soru-uret-btn');
-        const loadingDiv = document.getElementById('loading');
-        const errorDiv = document.getElementById('error-message');
-        const resultsAreaDiv = document.getElementById('results-area');
-        const soruAlaniDiv = document.getElementById('soru-alani');
-        const cevapAlaniDiv = document.getElementById('cevap-alani');
-        const toggleCevapBtn = document.getElementById('toggle-cevap-btn');
-
-        // --- API URL (Relative Path) ---
-        // Assumes this HTML is served by the same Flask app as the API endpoint
-        const API_URL = 'https://questioncreator.onrender.com/soru_uret'; // Make sure this is YOUR EXACT Render URL!
-
-        // --- Event Listener for Soru Tipi Change ---
-        soruTipiSelect.addEventListener('change', function() {
+        // Çeviri yönü alanını sadece Çeviri Sorusu seçildiğinde göster
+        document.getElementById('soru-tipi').addEventListener('change', function() {
+            const ceviriYonuAlani = document.getElementById('ceviri-yonu-alani');
             if (this.value === 'Çeviri Sorusu') {
-                ceviriYonuContainer.style.display = 'grid'; // Use grid display
+                ceviriYonuAlani.style.display = 'block';
             } else {
-                ceviriYonuContainer.style.display = 'none';
+                ceviriYonuAlani.style.display = 'none';
             }
         });
-        // Trigger change on load in case 'Çeviri Sorusu' is pre-selected
-        soruTipiSelect.dispatchEvent(new Event('change'));
 
-        // --- Event Listener for Form Submission ---
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent default form submission
+        document.getElementById('soru-uret-btn').addEventListener('click', function() {
+            const sinavTipi = document.getElementById('sinav-tipi').value;
+            const zorlukSeviyesi = document.getElementById('zorluk-seviyesi').value;
+            const soruTipi = document.getElementById('soru-tipi').value;
+            const soruSayisi = document.getElementById('soru-sayisi').value;
+            const ceviriYonu = document.getElementById('ceviri-yonu').value;
 
-            // --- Reset UI ---
-            soruUretBtn.disabled = true; // Disable button during request
-            loadingDiv.style.display = 'block';
-            errorDiv.style.display = 'none';
-            errorDiv.textContent = '';
-            resultsAreaDiv.style.display = 'none'; // Hide results while loading
-            soruAlaniDiv.textContent = '';
-            cevapAlaniDiv.textContent = '';
-            toggleCevapBtn.style.display = 'none'; // Hide toggle button
-            cevapAlaniDiv.style.display = 'none'; // Ensure answers are hidden
-            toggleCevapBtn.textContent = 'Cevapları Göster';
-
-            // --- Get Form Values ---
-            const sinavTipi = sinavTipiSelect.value;
-            const zorlukSeviyesi = zorlukSeviyesiSelect.value; // Make sure backend expects these values
-            const soruTipi = soruTipiSelect.value;
-            const soruSayisi = parseInt(soruSayisiInput.value, 10); // Convert to integer
-            const isCeviri = soruTipi === 'Çeviri Sorusu';
-            const ceviriYonu = isCeviri ? ceviriYonuSelect.value : undefined;
-
-            // --- Basic Frontend Validation ---
-            if (isNaN(soruSayisi) || soruSayisi < 1 || soruSayisi > 20) {
-                showError('Lütfen 1 ile 20 arasında geçerli bir soru sayısı girin.');
-                resetUIState();
-                return;
-            }
-
-            // --- Prepare Payload ---
-            const payload = {
-                sinav_tipi: sinavTipi,
-                zorluk_seviyesi: zorlukSeviyesi,
-                soru_tipi: soruTipi,
-                soru_sayisi: soruSayisi,
-            };
-            if (isCeviri) {
-                payload.ceviri_yonu = ceviriYonu;
-            }
-
-            // --- API Call ---
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json(); // Try to parse JSON always
-
-                if (!response.ok) {
-                    // Handle HTTP errors (4xx, 5xx) using error message from API if available
-                    throw new Error(data.error || `HTTP Hata Kodu: ${response.status}`);
-                }
-
-                // --- Success ---
+            fetch('http://localhost:5000/soru_uret', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sinav_tipi: sinavTipi,
+                    zorluk_seviyesi: zorlukSeviyesi,
+                    soru_tipi: soruTipi,
+                    soru_sayisi: soruSayisi,
+                    ceviri_yonu: ceviriYonu  // Çeviri yönünü gönder
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
                 if (data.questions) {
-                    soruAlaniDiv.textContent = data.questions;
-                    cevapAlaniDiv.textContent = data.answers || 'Cevap bulunamadı.'; // Handle potential missing answers
-                    resultsAreaDiv.style.display = 'block'; // Show results area
-                    if(data.answers) { // Only show toggle button if answers exist
-                         toggleCevapBtn.style.display = 'inline-block';
-                    }
-                } else {
-                    // Handle cases where response is OK but no questions (shouldn't happen with current logic)
-                     showError('API\'den geçerli soru alınamadı.');
+                    document.getElementById('soru-alani').textContent = data.questions;
+                    document.getElementById('cevap-alani').textContent = data.answers;
+                    document.getElementById('cevap-alani').style.display = 'none'; // Varsayılan gizli
+                } else if (data.error) {
+                    document.getElementById('soru-alani').textContent = 'Hata: ' + data.error;
+                    document.getElementById('cevap-alani').textContent = '';
                 }
-
-            } catch (error) {
-                console.error('API Hatası:', error);
-                showError(`Bir hata oluştu: ${error.message}`);
-            } finally {
-                // --- Always run after try/catch ---
-                resetUIState();
-            }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                document.getElementById('soru-alani').textContent = 'Bir hata oluştu.';
+                document.getElementById('cevap-alani').textContent = '';
+            });
         });
 
-        // --- Event Listener for Toggle Cevap Button ---
-        toggleCevapBtn.addEventListener('click', function() {
-            if (cevapAlaniDiv.style.display === 'none' || cevapAlaniDiv.style.display === '') {
-                cevapAlaniDiv.style.display = 'block';
+        document.getElementById('toggle-cevap-btn').addEventListener('click', function() {
+            const cevapAlani = document.getElementById('cevap-alani');
+            if (cevapAlani.style.display === 'none' || cevapAlani.style.display === '') {
+                cevapAlani.style.display = 'block';
                 this.textContent = 'Cevapları Gizle';
             } else {
-                cevapAlaniDiv.style.display = 'none';
+                cevapAlani.style.display = 'none';
                 this.textContent = 'Cevapları Göster';
             }
         });
-
-        // --- Helper Functions ---
-        function showError(message) {
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-
-        function resetUIState() {
-             loadingDiv.style.display = 'none';
-             soruUretBtn.disabled = false; // Re-enable button
-        }
-
     </script>
 </body>
 </html>
