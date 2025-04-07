@@ -283,6 +283,10 @@ Make sure that all questions have answers, even when generating multiple paragra
 @app.route('/')
 def index():
     return render_template('index.html')
+@app.route("/api", methods=["GET"])
+def test_api():
+    return jsonify({"message": "API is working!"})
+
 
 @app.route('/soru_uret', methods=['POST'])
 def uret_soru():
